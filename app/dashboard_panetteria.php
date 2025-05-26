@@ -55,120 +55,118 @@ foreach ($orders as $order) {
 }
 
 ?>
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $pageTitle . " - ". $_SESSION['Nome']; ?> </title>
-    <link rel="stylesheet" href="style/dashboard.css">
-    <link rel="stylesheet" href="/public/assets/css/style.css">
-    <script src="/public/assets/js/app.js"></script>
-</head>
+<!-- dashboard_panetteria.php (aggiornato) -->
+<?php include('templates/head.php'); ?>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <?php include 'templates/sidebar.php'; ?>
+    <?php include('templates/sidebar.php'); ?>
+    
+    <div class="main-content">
+        <?php include('templates/header.php'); ?>
         
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <?php include 'templates/header.php'; ?>
-            
-            <!-- Dashboard Content -->
-            <div class="dashboard-content">
-                <div class="main-section">
-                    <!-- Order Summary Cards -->
-                    <div class="order-cards">
-                        <div class="order-card total-orders">
-                            <div class="card-header">Totale Ordini</div>
-                            <div class="card-content"><?php echo $totalOrders; ?></div>
-                        </div>
-                        
-                        <div class="order-card pending-orders">
-                            <div class="card-header">In Attesa</div>
-                            <div class="card-content"><?php echo $pendingOrders; ?></div>
-                        </div>
-                        
-                        <div class="order-card processing-orders">
-                            <div class="card-header">In Preparazione</div>
-                            <div class="card-content"><?php echo $processingOrders; ?></div>
-                        </div>
-                        
-                        <div class="order-card ready-orders">
-                            <div class="card-header">Pronti</div>
-                            <div class="card-content"><?php echo $readyOrders; ?></div>
-                        </div>
-                    </div>
-                    
-                    <!-- Orders List -->
-                    <div class="orders-section">
-                        <h2>Lista Ordini Attivi</h2>
-                        
-                        <?php if (empty($orders)): ?>
-                            <div class="no-orders">
-                                <p>Nessun ordine attivo al momento.</p>
-                            </div>
-                        <?php else: ?>
-                            <div class="orders-table">
-                                <div class="table-header">
-                                    <div class="col-date">Data</div>
-                                    <div class="col-customer">Cliente</div>
-                                    <div class="col-status">Stato</div>
-                                    <div class="col-total">Totale</div>
-                                    <div class="col-actions">Azioni</div>
-                                </div>
-                                
-                                <?php foreach ($orders as $order): ?>
-                                <div class="order-row" data-status="<?php  echo strtolower($order['Stato']); ?>">
+        <div class="container-fluid mt-4">
+            <div class="card shadow-sm mb-4">
+    <div class="card-header bg-beige">
+        <h5 class="mb-0">Ordini in Lavorazione</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Data Ordine</th>
+                    <th>Stato</th>
+                    <th>Totale</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($orders as $order): ?>
+                <tr>
+                    <td><?= htmlspecialchars($order['Nome'] ?? $order['Username']) ?></td>
+                    <td><?= date('d M Y', strtotime($order['DataOrdine'])) ?></td>
+                    <td>
+                        <span class="badge 
+                            <?= match(strtolower($order['Stato'])) {
+                                'in attesa' => 'bg-warning',
+                                'confermato', 'in preparazione' => 'bg-info',
+                                'pronto' => 'bg-success',
+                                default => 'bg-secondary'
+                            } ?>">
+                            <?= ucfirst($order['Stato']) ?>
+                        </span>
+                    </td>
+                    <td>€<?= number_format($order['Totale'], 2) ?></td>
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                                    <div class="col-date">
-                                        <?php echo date('d/m/Y H:i', strtotime($order['DataCreazione'])); ?>
-                                    </div>
-                                    <div class="col-customer">
-                                        <?php echo htmlspecialchars($order['Nome'] . ' ' . $order['Cognome'] ?? 'N/A'); ?>
-                                    </div>
-                                    <div class="col-status">
-                                        <span class="status-badge status-<?php echo str_replace([' ', 'à'], ['', 'a'], strtolower($order['Stato'])); ?>">
-                                            <?php echo ucfirst($order['Stato']); ?>
-                                        </span>
-                                    </div>
-                                    <div class="col-total">
-                                        €<?php echo number_format($order['TotaleOrdine'] ?? 0, 2, ',', '.'); ?>
-                                    </div>
-                                    <div class="col-actions">
-                                        <button class="btn-view" onclick="viewOrder(<?php echo $order['IdOrdine']; ?>)">
-                                            Visualizza
-                                        </button>
-                                        
-                                        <?php if (strtolower($order['Stato']) == 'In attesa'): ?>
-                                            <button class="btn-accept" onclick="updateOrderStatus(<?php echo $order['IdOrdine']; ?>, 'Confermato')">
-                                                Accetta
-                                            </button>
-                                        <?php elseif (strtolower($order['Stato']) == 'Confermato'): ?>
-                                            <button class="btn-ready" onclick="updateOrderStatus(<?php echo $order['IdOrdine']; ?>, 'In preparazione')">
-                                                Prepara
-                                            </button>
-                                        <?php elseif (strtolower($order['Stato']) == 'Pronto'): ?>
-                                            <button class="btn-deliver" onclick="updateOrderStatus(<?php echo $order['IdOrdine']; ?>, 'Consegnato')">
-                                                Consegna
-                                            </button>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <?php endforeach; ?>
+<!-- Sezione Calendario -->
+<div class="card shadow-sm">
+    <div class="card-header bg-beige">
+        <h5 class="mb-0">Calendario Consegne</h5>
+    </div>
+    <div class="card-body">
+        <div class="calendar">
+            <div class="d-flex justify-content-between mb-3">
+                <h6><?= date('F Y') ?></h6>
+            </div>
+            <table class="table table-bordered text-center">
+                <thead>
+                    <tr>
+                        <th scope="col">Lun</th>
+                        <th scope="col">Mar</th>
+                        <th scope="col">Mer</th>
+                        <th scope="col">Gio</th>
+                        <th scope="col">Ven</th>
+                        <th scope="col">Sab</th>
+                        <th scope="col">Dom</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach ($weeks as $week): ?>
+                    <tr>
+                        <?php foreach ($week as $day): ?>
+                        <td class="<?= $day ? 'fw-bold' : 'text-muted' ?>">
+                            <?= $day ?: '' ?>
+                            <?php if ($day): ?>
+                            <div class="small">
+                                <?php
+                                $currentDate = date("$year-$month-$day");
+                                $deliveries = array_filter($deliveredOrders, function($o) use ($currentDate) {
+                                    return $o['DataConsegna'] == $currentDate;
+                                });
+                                ?>
+                                <?php if(count($deliveries) > 0): ?>
+                                <span class="badge bg-danger rounded-pill">
+                                    <?= count($deliveries) ?>
+                                </span>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
+                                        <?php endif; ?>
+                                    </td>
+                                    <?php endforeach; ?>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end gap-2">
+                            <button class="btn btn-sm btn-outline-secondary">Mese Precedente</button>
+                            <button class="btn btn-sm btn-primary">Mese Successivo</button>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Sidebar Right (Calendar) -->
-                <div class="sidebar-right">
-                    <?php include 'templates/calendar.php'; ?>
+            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <?php include('templates/footer.php'); ?>
 
-      
+</body>
+</html>

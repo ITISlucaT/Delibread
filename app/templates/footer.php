@@ -1,7 +1,5 @@
-    <footer>
-        <div class="container">
-            <p>&copy; <?php echo date('Y'); ?> DeliBread - Tutti i diritti riservati</p>
-        </div>
-    </footer>
-</body>
-</html>
+<footer class="footer mt-auto py-3 bg-beige">
+    <div class="container-fluid">
+        <span class="text-muted">© 2025 Delibread ERP</span>
+    </div>
+</footer>

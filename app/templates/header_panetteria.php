@@ -1,3 +1,12 @@
+<header class="navbar navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Dashboard Panetteria</span>
+        <div class="d-flex align-items-center">
+            <a href="functions/logout.php" class="btn btn-outline-danger btn-sm">Logout</a>
+        </div>
+    </div>
+</header>
+<!-- 
 <header class="main-header">
     <div class="header-left">
         <h1 class="page-title"><?php echo $pageTitle ?? 'Dashboard'; ?></h1>
@@ -24,4 +33,4 @@
             </div>
         </div>
     </div>
-</header>
+</header> -->
