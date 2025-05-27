@@ -84,3 +84,29 @@ INSERT INTO Utente_Notifica (IdUtente, IdNotifica) VALUES
 (10, 7),
 -- Notifica all'amministratore
 (1, 8);
+
+
+-- Query INSERT multipla per la tabella ordine
+
+INSERT INTO `ordine` (`IdOrdine`, `DataCreazione`, `DataConsegna`, `Stato`, `Note`, `IdUtente`, `IdPanetteria`) 
+VALUES 
+(NULL, current_timestamp(), '2025-05-31', 'In preparazione', 'Consegna urgente', '1', '3'),
+(NULL, current_timestamp(), '2025-06-01', 'In preparazione', 'Senza glutine', '1', '2'),
+(NULL, current_timestamp(), '2025-06-02', 'In preparazione', NULL, '1', '1'),
+(NULL, current_timestamp(), '2025-06-03', 'In preparazione', 'Consegna mattutina', '1', '4'),
+(NULL, current_timestamp(), '2025-06-05', 'In preparazione', 'Festa di compleanno', '1', '6'),
+(NULL, current_timestamp(), '2025-06-07', 'In preparazione', 'Chiamare prima della consegna', '1', '7'),
+(NULL, current_timestamp(), '2025-06-10', 'In preparazione', NULL, '1', '8'),
+(NULL, current_timestamp(), '2025-06-12', 'In preparazione', 'Ordine per ufficio', '1', '2'),
+(NULL, current_timestamp(), '2025-06-15', 'In preparazione', 'Vegano', '1', '5'),
+(NULL, current_timestamp(), '2025-06-18', 'In preparazione', 'Grande quantità', '1', '3');
+
+
+
+
+INSERT INTO `ordine_ricorrente` (`IdOrdineRicorrente`, `IdOrdine`, `Attivo`, `Frequenza`, `GiorniSettimana`) 
+VALUES 
+  ('15', '11', '1', 'Giornaliera', NULL),
+  ('16', '11', '1', 'Settimanale', 'Lunedì,Mercoledì,Venerdì'),
+  ('17', '11', '1', 'Mensile', NULL),
+  ('18', '11', '0', 'Settimanale', 'Martedì,Giovedì');
