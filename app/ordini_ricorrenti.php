@@ -22,7 +22,8 @@ $stmt = $conn->prepare("SELECT *
 FROM ordine_ricorrente 
 INNER JOIN ordine ON ordine.idOrdine = ordine_ricorrente.idOrdine 
 INNER JOIN Panetteria ON Panetteria.idPanetteria = Ordine.idPanetteria 
-WHERE ordine.IdUtente = ?");
+WHERE ordine.IdUtente = ?
+ORDER BY ordine_ricorrente.frequenza");
 $stmt->bind_param("i", $_SESSION['IdUtente']);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -201,7 +202,7 @@ $stmt->close();
             <?php 
             foreach ($ordini_ricorrenti as $ordine) { 
                 $stmt = $conn->prepare("SELECT * FROM ordine INNER JOIN Ordine_Prodotto ON Ordine_Prodotto.idOrdine = ordine.idOrdine INNER JOIN ordine_ricorrente ON ordine_ricorrente.idOrdine = ordine.idOrdine
-                INNER JOIN Prodotto ON Prodotto.idProdotto = Ordine_Prodotto.idProdotto  WHERE ordine.idOrdine = ? ORDER BY ordine_ricorrente.frequenza DESC");
+                INNER JOIN Prodotto ON Prodotto.idProdotto = Ordine_Prodotto.idProdotto  WHERE ordine.idOrdine = ? ");
                 $stmt->bind_param("i", $ordine['IdOrdine']);
                 $stmt->execute();
                 $result = $stmt->get_result();
