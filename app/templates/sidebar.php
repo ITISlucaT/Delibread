@@ -217,6 +217,10 @@ html {
                     <i class="bi bi-list-task"></i>
                     Ordini da Preparare
                 </a>
+                <a href="prodotti_ordine.php" class="menu-link <?= ($current_page == 'prodotti_ordine') ? 'active' : '' ?>">
+                    <i class="bi bi-list-task"></i>
+                        Alimenti da produrre
+                    </a>
                 <a href="programma_giorno.php" class="menu-link <?= ($current_page == 'programma_giorno') ? 'active' : '' ?>">
                     <i class="bi bi-calendar-day"></i>
                     Programma del Giorno

@@ -47,7 +47,7 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
         if ($row['Tipo'] == 'Panettiere') {
            header("Location: dashboard_panetteria.php");
         } else {
-            header("Location: dashboard.php");
+            header("Location: ordini.php");
         }
         exit();
     } else {
