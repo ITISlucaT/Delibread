@@ -365,7 +365,7 @@ $current_page = 'ordini';
                 <div class="row">
                     <div class="col-12">
                         <h1 class="mb-1">🛒 Effettua un ordine</h1>
-                        <p class="mb-0">Descrivi il tuo ordine</p>
+                        <!-- <p class="mb-0">Descrivi il tuo ordine</p> -->
                     </div>
                 </div>
             </div>
