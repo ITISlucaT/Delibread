@@ -49,14 +49,14 @@
     <div class="sidebar position-fixed vh-100">         
         <div class="logo-container">             
             <div class="d-flex align-items-center gap-3">                 
-                <img src="logo.png" alt="Logo" class="rounded-circle" style="width: 50px; height: 50px;">                 
+                <img src="assets/logo.png" alt="Logo" class="rounded-circle" style="width: 50px; height: 50px;">                 
                 <h5 class="mb-0">Delibread</h5>             
             </div>         
         </div>          
         
         <div class="p-3">             
             <nav class="nav flex-column gap-2">                 
-                <a href="#profilo" class="menu-link <?php echo (isset($current_page) && $current_page == 'profilo') ? 'active' : ''; ?>">                     
+                <a href="profilo.php" class="menu-link <?php echo (isset($current_page) && $current_page == 'profilo') ? 'active' : ''; ?>">                     
                     <i class="bi bi-person fs-5"></i>                     
                     Profilo                 
                 </a>                                  
@@ -80,11 +80,7 @@
                     <i class="bi bi-basket fs-5"></i>                     
                     Prodotti                 
                 </a>                  
-                
-                <a href="#impostazioni" class="menu-link <?php echo (isset($current_page) && $current_page == 'impostazioni') ? 'active' : ''; ?>">                     
-                    <i class="bi bi-gear fs-5"></i>                     
-                    Impostazioni                 
-                </a>             
+                            
             </nav>         
         </div>     
     </div>      

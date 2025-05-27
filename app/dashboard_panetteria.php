@@ -230,6 +230,70 @@ $deliveredOrders = []; // Placeholder per ordini consegnati
         font-size: 2rem;
     }
 }
+
+/* Add this to your existing CSS in dashboard_panetteria.php */
+
+.bakery-main {
+    flex: 1;
+    margin-left: 280px;
+    padding: 2rem;
+    min-height: 100vh;
+    width: calc(100% - 280px);
+    overflow-x: auto;
+}
+
+.bakery-container {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    position: relative;
+}
+
+@media (max-width: 768px) {
+    .bakery-main {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+    
+    .content-header h1 {
+        font-size: 2rem;
+    }
+    
+    .stats-cards .col-md-3 {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+    
+    .calendar-table th,
+    .calendar-table td {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .bakery-main {
+        padding: 0.5rem;
+    }
+    
+    .content-header {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .content-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .order-header h4,
+    .calendar-header h4 {
+        font-size: 1.1rem;
+    }
+}
 </style>
 
 <!-- Include Bootstrap CSS e Icons -->
@@ -238,7 +302,6 @@ $deliveredOrders = []; // Placeholder per ordini consegnati
 
 <div class="bakery-container">
     <?php include('templates/sidebar.php'); ?>
-    
     <main class="bakery-main">
         <div class="content-header">
             <div class="d-flex align-items-center mb-2">
@@ -298,13 +361,13 @@ $deliveredOrders = []; // Placeholder per ordini consegnati
             </div>
             <div class="card-body p-0">
                 <?php if (count($orders) > 0): ?>
-                <table class="table table-modern mb-0">
+                <div class="table-responsive">
+                 <table class="table table-modern mb-0">
                     <thead>
                         <tr>
                             <th><i class="bi bi-person me-2"></i>Cliente</th>
                             <th><i class="bi bi-calendar-date me-2"></i>Data Ordine</th>
                             <th><i class="bi bi-flag me-2"></i>Stato</th>
-                            <th><i class="bi bi-currency-euro me-2"></i>Totale</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -320,7 +383,7 @@ $deliveredOrders = []; // Placeholder per ordini consegnati
                             </td>
                             <td>
                                 <i class="bi bi-calendar3 me-2 text-muted"></i>
-                                <?= date('d M Y', strtotime($order['DataOrdine'])) ?>
+                                <?= date('d M Y', strtotime($order['DataCreazione'])) ?>
                             </td>
                             <td>
                                 <span class="badge status-badge
@@ -342,13 +405,11 @@ $deliveredOrders = []; // Placeholder per ordini consegnati
                                     <?= ucfirst($order['Stato']) ?>
                                 </span>
                             </td>
-                            <td>
-                                <span class="fw-bold fs-5 text-success">€<?= number_format($order['Totale'], 2) ?></span>
-                            </td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
+                </div>
                 <?php else: ?>
                 <div class="text-center py-5">
                     <i class="bi bi-inbox display-1 text-muted mb-3"></i>
@@ -359,68 +420,9 @@ $deliveredOrders = []; // Placeholder per ordini consegnati
             </div>
         </div>
 
-        <!-- Sezione Calendario -->
-        <div class="card calendar-card">
-            <div class="calendar-header">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <i class="bi bi-calendar-month me-3" style="font-size: 1.5rem;"></i>
-                        <h4 class="mb-0">Calendario Consegne</h4>
-                    </div>
-                    <div class="d-flex align-items-center">
-                        <h5 class="mb-0 opacity-75"><?= date('F Y') ?></h5>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <table class="table calendar-table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Lun</th>
-                            <th scope="col">Mar</th>
-                            <th scope="col">Mer</th>
-                            <th scope="col">Gio</th>
-                            <th scope="col">Ven</th>
-                            <th scope="col">Sab</th>
-                            <th scope="col">Dom</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($weeks as $week): ?>
-                        <tr>
-                            <?php foreach ($week as $day): ?>
-                            <td class="position-relative">
-                                <?php if ($day): ?>
-                                <div class="calendar-day"><?= $day ?></div>
-                                <?php
-                                $currentDate = date("$year-$month-" . sprintf("%02d", $day));
-                                $deliveries = array_filter($deliveredOrders, function($o) use ($currentDate) {
-                                    return isset($o['DataConsegna']) && $o['DataConsegna'] == $currentDate;
-                                });
-                                ?>
-                                <?php if(count($deliveries) > 0): ?>
-                                <span class="badge bg-danger delivery-badge">
-                                    <?= count($deliveries) ?>
-                                </span>
-                                <?php endif; ?>
-                                <?php endif; ?>
-                            </td>
-                            <?php endforeach; ?>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                <div class="d-flex justify-content-between mt-3">
-                    <button class="btn btn-outline-secondary">
-                        <i class="bi bi-chevron-left me-2"></i>
-                        Mese Precedente
-                    </button>
-                    <button class="btn btn-primary">
-                        <i class="bi bi-chevron-right me-2"></i>
-                        Mese Successivo
-                    </button>
-                </div>
-            </div>
+
+                <?php include('templates/calendar.php'); ?>
+
         </div>
     </main>
 </div>

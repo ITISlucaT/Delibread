@@ -8,7 +8,7 @@ if (isset($_SESSION['IdUtente'])) {
     if ($_SESSION['Tipo'] == 'Panettiere') {
         header("Location: dashboard_panetteria.php");
     } else {
-        header("Location: dashboard.php");
+        header("Location: ordini.php");
     }
     exit();
 }

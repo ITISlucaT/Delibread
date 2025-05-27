@@ -86,6 +86,8 @@ CREATE TABLE Ordine_Ricorrente (
     IdOrdineRicorrente INT AUTO_INCREMENT PRIMARY KEY,
     IdOrdine INT NOT NULL,
     Attivo BOOLEAN DEFAULT TRUE,
+    Frequenza ENUM('Giornaliera', 'Settimanale', 'Mensile') NOT NULL,
+    GiorniSettimana VARCHAR(50), -- Giorni della settimana in cui l'ordine è attivo (es. "Lun,Mar,Mer")
     FOREIGN KEY (IdOrdine) REFERENCES Ordine(IdOrdine) ON DELETE CASCADE
 );
 
