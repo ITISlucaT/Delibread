@@ -310,14 +310,14 @@ $stmt->close();
                         <div class="order-footer">
                             <div class="d-flex justify-content-between">
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-outline-primary btn-sm">
+                                    <a href="modifica_ordine_ricorrente.php?id='.$ordine['IdOrdine'].'" class="btn btn-outline-danger btn-sm">
                                         <i class="bi bi-pencil-square me-1"></i>
                                         Modifica
-                                    </button>
-                                    <button class="btn btn-outline-danger btn-sm">
+                                    </a>
+                                    <a href="delete_ordine_ricorrente.php?id='.$ordine['IdOrdine'].'" class="btn btn-outline-danger btn-sm">
                                         <i class="bi bi-trash me-1"></i>
                                         Elimina
-                                    </button>
+                                    </a>
                                 </div>');
                 
                 if ($ordine['Attivo'] == 1) {
