@@ -419,9 +419,7 @@ $deliveredOrders = []; // Placeholder per ordini consegnati
                 <?php endif; ?>
             </div>
         </div>
-
-
-                <?php include('templates/calendar.php'); ?>
+        <?php include('templates/calendar.php'); ?>
 
         </div>
     </main>
