@@ -63,7 +63,6 @@ foreach ($ordersData as $row) {
             'Note' => $row['Note'],
             'NomeCliente' => $row['NomeCliente'],
             'CognomeCliente' => $row['CognomeCliente'],
-            'Username' => $row['Username'],
             'Email' => $row['Email'],
             'Telefono' => $row['Telefono'],
             'prodotti' => []
@@ -425,7 +424,6 @@ function getStatusIcon($stato) {
                     <table class="table table-modern mb-0">
                         <thead>
                             <tr>
-                                <th><i class="bi bi-hash me-2"></i>ID Ordine</th>
                                 <th><i class="bi bi-person me-2"></i>Cliente</th>
                                 <th><i class="bi bi-telephone me-2"></i>Contatto</th>
                                 <th><i class="bi bi-clock me-2"></i>Ora Ordine</th>
@@ -439,14 +437,7 @@ function getStatusIcon($stato) {
                             <?php foreach ($orders as $order): ?>
                             <tr>
                                 <td>
-                                    <strong class="text-primary">#<?= $order['IdOrdine'] ?></strong>
-                                </td>
-                                <td>
                                     <div class="d-flex align-items-center">
-                                        <div class="avatar-circle bg-primary text-white me-3">
-                                            <?= strtoupper(substr($order['NomeCliente'] ?: $order['Username'], 0, 1)) ?>
-                                        </div>
-                                        <div>
                                             <strong><?= htmlspecialchars($order['NomeCliente'] . ' ' . $order['CognomeCliente']) ?></strong>
                                             <?php if (!$order['NomeCliente']): ?>
                                                 <br><small class="text-muted"><?= htmlspecialchars($order['Username']) ?></small>

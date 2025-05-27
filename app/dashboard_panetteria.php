@@ -73,7 +73,6 @@ for ($day = 1; $day <= $daysInMonth; $day++) {
 }
 
 $deliveredOrders = []; // Placeholder per ordini consegnati
-print_r($order)
 ?>
 
 <style>
