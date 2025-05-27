@@ -11,7 +11,7 @@ include 'templates/header.php';
 
 
 
-$stmt = $conn->prepare("DELETE FROM ordine_ricorrente WHERE IdOrdine = ?");
+$stmt = $conn->prepare("DELETE FROM ordine_ricorrente WHERE IdOrdineRicorrente = ?");
 $stmt->execute([$_GET['id']]);
 $conn->close();
 

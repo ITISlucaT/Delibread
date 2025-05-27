@@ -105,8 +105,40 @@ VALUES
 
 
 INSERT INTO `ordine_ricorrente` (`IdOrdineRicorrente`, `IdOrdine`, `Attivo`, `Frequenza`, `GiorniSettimana`) 
-VALUES 
-  ('15', '11', '1', 'Giornaliera', NULL),
-  ('16', '11', '1', 'Settimanale', 'Lunedì,Mercoledì,Venerdì'),
-  ('17', '11', '1', 'Mensile', NULL),
-  ('18', '11', '0', 'Settimanale', 'Martedì,Giovedì');
+VALUES
+  -- Ordine giornaliero (attivo)
+  ('19', '11', '1', 'Giornaliera', NULL),
+  
+  -- Ordini settimanali (attivi, giorni vari)
+  ('20', '11', '1', 'Settimanale', 'Lunedì,Mercoledì,Venerdì'),
+  ('21', '11', '1', 'Settimanale', 'Martedì,Giovedì'),
+  ('22', '11', '1', 'Settimanale', 'Sabato'),
+  
+  -- Ordini mensili (attivi)
+  ('23', '11', '1', 'Mensile', NULL),
+  ('24', '11', '1', 'Mensile', NULL),
+  
+  -- Ordini disattivati (varie frequenze)
+  ('25', '11', '0', 'Settimanale', 'Lunedì,Venerdì'),
+  ('26', '11', '0', 'Giornaliera', NULL),
+  
+  -- Altri casi (weekend o giorni specifici)
+  ('27', '11', '1', 'Settimanale', 'Sabato,Domenica'),
+  ('28', '11', '1', 'Settimanale', 'Mercoledì');
+
+
+
+
+  INSERT INTO `ordine_prodotto` (`IdOrdine`, `IdProdotto`, `Quantita`) 
+VALUES
+('11', '1', '5'),
+('11', '3', '8'),
+('11', '7', '12'),
+('12', '2', '6'),
+('12', '5', '10'),
+('12', '9', '15'),
+('13', '4', '3'),
+('13', '8', '7'),
+('14', '6', '9'),
+('14', '10', '4'),
+('14', '12', '11');
