@@ -463,7 +463,7 @@ if(strlen($iniziali) < 2 && count($parole) > 0) {
 </style>
 
 <div class="client-container">
-    <?php include 'templates/client_nav.php'; ?>
+    <?php include 'templates/sidebar.php'; ?>
     
     <main class="client-main">
         <!-- Header con gradiente arrotondato -->
