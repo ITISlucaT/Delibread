@@ -19,22 +19,21 @@ $row = $result->fetch_assoc();
 $idPanetteria = $row['IdPanetteria'];
 $stmt->close();
 
-// Query per recuperare gli ordini di oggi raggruppati per prodotto
+// Query per recuperare gli ordini di oggi raggruppati per prodotto e sommare le quantità
 $today = date('Y-m-d');
 $stmt = $conn->prepare("SELECT
     p.IdProdotto,
     p.Nome as NomeProdotto,
-    o.IdOrdine,
-    o.DataCreazione,
-    o.DataConsegna,
-    o.Stato,
-    o.Note,
-    u.Nome as NomeCliente,
-    u.Cognome as CognomeCliente,
-    u.Email,
-    u.Telefono,
-    op.Quantita,
-    pan.Nome as NomePanetteria
+    SUM(op.Quantita) as QuantitaTotale,
+    GROUP_CONCAT(DISTINCT u.IdUtente) as IdUtenti,
+    GROUP_CONCAT(DISTINCT CONCAT(u.Nome, ' ', u.Cognome)) as NomiUtenti,
+    GROUP_CONCAT(DISTINCT u.Email) as EmailUtenti,
+    GROUP_CONCAT(DISTINCT u.Telefono) as TelefonoUtenti,
+    GROUP_CONCAT(DISTINCT o.IdOrdine) as IdOrdini,
+    GROUP_CONCAT(DISTINCT o.Stato) as Stati,
+    GROUP_CONCAT(DISTINCT o.Note) as Note,
+    GROUP_CONCAT(DISTINCT o.DataCreazione) as DataCreazione,
+    GROUP_CONCAT(DISTINCT o.DataConsegna) as DataConsegna
 FROM ordine o
 INNER JOIN ordine_panetteria op_pan ON o.IdOrdine = op_pan.IdOrdine
 INNER JOIN panetteria pan ON op_pan.IdPanetteria = pan.IdPanetteria
@@ -43,51 +42,46 @@ INNER JOIN ordine_prodotto op ON o.IdOrdine = op.IdOrdine
 INNER JOIN prodotto p ON op.IdProdotto = p.IdProdotto
 WHERE DATE(o.DataCreazione) = ?
 AND pan.IdPanetteria = ?
-ORDER BY p.Nome, o.DataCreazione DESC, o.IdOrdine");
+GROUP BY p.IdProdotto, p.Nome
+ORDER BY p.Nome");
 
 $stmt->bind_param("si", $today, $idPanetteria);
 $stmt->execute();
 $result = $stmt->get_result();
-$ordersData = $result->fetch_all(MYSQLI_ASSOC);
+$productsData = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
 // Raggruppa gli ordini per prodotto
 $products = [];
-foreach ($ordersData as $row) {
+foreach ($productsData as $row) {
     $productId = $row['IdProdotto'];
-    if (!isset($products[$productId])) {
-        $products[$productId] = [
-            'IdProdotto' => $row['IdProdotto'],
-            'NomeProdotto' => $row['NomeProdotto'],
-            'ordini' => []
-        ];
-    }
-    $products[$productId]['ordini'][] = [
-        'IdOrdine' => $row['IdOrdine'],
-        'DataCreazione' => $row['DataCreazione'],
-        'DataConsegna' => $row['DataConsegna'],
-        'Stato' => $row['Stato'],
-        'Note' => $row['Note'],
-        'NomeCliente' => $row['NomeCliente'],
-        'CognomeCliente' => $row['CognomeCliente'],
-        'Email' => $row['Email'],
-        'Telefono' => $row['Telefono'],
-        'Quantita' => $row['Quantita'],
-        'completato' => false // Aggiungi un campo per segnalare se l'ordine è completato
+    $products[$productId] = [
+        'IdProdotto' => $row['IdProdotto'],
+        'NomeProdotto' => $row['NomeProdotto'],
+        'QuantitaTotale' => $row['QuantitaTotale'],
+        'IdUtenti' => explode(',', $row['IdUtenti']),
+        'NomiUtenti' => explode(',', $row['NomiUtenti']),
+        'EmailUtenti' => explode(',', $row['EmailUtenti']),
+        'TelefonoUtenti' => explode(',', $row['TelefonoUtenti']),
+        'IdOrdini' => explode(',', $row['IdOrdini']),
+        'Stati' => explode(',', $row['Stati']),
+        'Note' => explode(',', $row['Note']),
+        'DataCreazione' => explode(',', $row['DataCreazione']),
+        'DataConsegna' => explode(',', $row['DataConsegna']),
+        'completato' => array_fill(0, $row['QuantitaTotale'], false) // Aggiungi un campo per segnalare se l'ordine è completato
     ];
 }
 
 // Calcola statistiche per le card
-$totalOrders = 0;
+$totalOrders = count($products);
 $pendingOrders = 0;
 $processingOrders = 0;
 $readyOrders = 0;
 $deliveredOrders = 0;
 
 foreach ($products as $product) {
-    foreach ($product['ordini'] as $order) {
-        $totalOrders++;
-        switch(strtolower($order['Stato'])) {
+    foreach ($product['Stati'] as $stato) {
+        switch(strtolower($stato)) {
             case 'in attesa':
                 $pendingOrders++;
                 break;
@@ -431,11 +425,10 @@ function getStatusIcon($stato) {
                         <thead>
                             <tr>
                                 <th><i class="bi bi-box-seam me-2"></i>Prodotto</th>
-                                <th><i class="bi bi-person me-2"></i>Cliente</th>
-                                <th><i class="bi bi-telephone me-2"></i>Contatto</th>
+                                <th><i class="bi bi-people me-2"></i>Utenti</th>
+                                <th><i class="bi bi-123 me-2"></i>Quantità Totale</th>
                                 <th><i class="bi bi-clock me-2"></i>Ora Ordine</th>
                                 <th><i class="bi bi-truck me-2"></i>Consegna</th>
-                                <th><i class="bi bi-123 me-2"></i>Quantità</th>
                                 <th><i class="bi bi-flag me-2"></i>Stato</th>
                                 <th><i class="bi bi-check-square me-2"></i>Completato</th>
                                 <th><i class="bi bi-sticky me-2"></i>Note</th>
@@ -443,39 +436,27 @@ function getStatusIcon($stato) {
                         </thead>
                         <tbody>
                             <?php foreach ($products as $product): ?>
-                            <?php foreach ($product['ordini'] as $order): ?>
                             <tr>
                                 <td>
                                     <strong><?= htmlspecialchars($product['NomeProdotto']) ?></strong>
                                 </td>
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <strong><?= htmlspecialchars($order['NomeCliente'] . ' ' . $order['CognomeCliente']) ?></strong>
-                                        <?php if (!$order['NomeCliente']): ?>
-                                            <br><small class="text-muted"><?= htmlspecialchars($order['Username']) ?></small>
-                                        <?php endif; ?>
+                                    <div>
+                                        <i class="bi bi-people me-1 text-muted"></i>
+                                        <small><?= count($product['NomiUtenti']) ?> utenti</small>
                                     </div>
                                 </td>
                                 <td>
-                                    <div>
-                                        <i class="bi bi-envelope me-1 text-muted"></i>
-                                        <small><?= htmlspecialchars($order['Email']) ?></small>
-                                    </div>
-                                    <?php if ($order['Telefono']): ?>
-                                    <div>
-                                        <i class="bi bi-telephone me-1 text-muted"></i>
-                                        <small><?= htmlspecialchars($order['Telefono']) ?></small>
-                                    </div>
-                                    <?php endif; ?>
+                                    <span class="badge bg-secondary ms-2">×<?= $product['QuantitaTotale'] ?></span>
                                 </td>
                                 <td>
                                     <i class="bi bi-clock me-2 text-muted"></i>
-                                    <strong><?= date('H:i', strtotime($order['DataCreazione'])) ?></strong>
+                                    <strong><?= date('H:i', strtotime($product['DataCreazione'][0])) ?></strong>
                                 </td>
                                 <td>
-                                    <?php if ($order['DataConsegna']): ?>
+                                    <?php if ($product['DataConsegna'][0]): ?>
                                         <i class="bi bi-calendar-check me-2 text-success"></i>
-                                        <?= date('d/m H:i', strtotime($order['DataConsegna'])) ?>
+                                        <?= date('d/m H:i', strtotime($product['DataConsegna'][0])) ?>
                                     <?php else: ?>
                                         <span class="text-muted">
                                             <i class="bi bi-dash-circle me-2"></i>
@@ -484,29 +465,31 @@ function getStatusIcon($stato) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="badge bg-secondary ms-2">×<?= $order['Quantita'] ?></span>
-                                </td>
-                                <td>
-                                    <span class="status-badge <?= getStatusClass($order['Stato']) ?>">
-                                        <i class="bi <?= getStatusIcon($order['Stato']) ?> me-1"></i>
-                                        <?= ucfirst($order['Stato']) ?>
+                                    <span class="status-badge <?= getStatusClass($product['Stati'][0]) ?>">
+                                        <i class="bi <?= getStatusIcon($product['Stati'][0]) ?> me-1"></i>
+                                        <?= ucfirst($product['Stati'][0]) ?>
                                     </span>
                                 </td>
                                 <td>
-                                    <input type="checkbox" class="form-check-input" <?= $order['completato'] ? 'checked' : '' ?> onchange="updateOrderStatus(<?= $order['IdOrdine'] ?>, this.checked)">
+                                    <div class="d-flex flex-wrap">
+                                        <?php for ($i = 0; $i < $product['QuantitaTotale']; $i++): ?>
+                                            <div class="form-check me-2">
+                                                <input type="checkbox" class="form-check-input" <?= $product['completato'][$i] ? 'checked' : '' ?> onchange="updateOrderStatus(<?= $product['IdOrdini'][0] ?>, <?= $i ?>, this.checked)">
+                                            </div>
+                                        <?php endfor; ?>
+                                    </div>
                                 </td>
                                 <td class="align-middle">
                                     <button type="button"
                                             class="btn btn-success btn-lg px-2 py-1 shadow-sm"
                                             title="Conferma ordine"
                                             aria-label="Conferma ordine"
-                                            onclick="confirmOrder(<?= $order['IdOrdine'] ?>)">
+                                            onclick="confirmOrder(<?= $product['IdOrdini'][0] ?>)">
                                         <i class="bi bi-check-circle-fill me-2"></i>
                                         Conferma Ordine
                                     </button>
                                 </td>
                             </tr>
-                            <?php endforeach; ?>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
@@ -640,9 +623,9 @@ setInterval(updateCurrentTime, 1000);
 updateCurrentTime();
 
 // Funzione per aggiornare lo stato di completamento dell'ordine
-function updateOrderStatus(orderId, completed) {
+function updateOrderStatus(orderId, index, completed) {
     // Qui puoi aggiungere la logica per aggiornare lo stato di completamento nel database
-    console.log(`Order ${orderId} completato: ${completed}`);
+    console.log(`Order ${orderId} completato: ${completed} per l'indice ${index}`);
 }
 </script>
 
