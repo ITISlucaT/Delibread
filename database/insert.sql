@@ -40,7 +40,7 @@ INSERT INTO Notifica (Tipo, Messaggio, Letta, DataCreazione) VALUES
 ('Ordine', 'Nuovo ordine ricevuto #12345', FALSE, NOW() - INTERVAL 2 DAY),
 ('Sistema', 'Manutenzione programmata per domani', TRUE, NOW() - INTERVAL 5 DAY),
 ('Promozione', 'Sconto del 10% su tutti i prodotti', FALSE, NOW() - INTERVAL 1 DAY),
-('Ordine', 'L\'ordine #12346 è stato consegnato', TRUE, NOW() - INTERVAL 3 DAY),
+('Ordine', 'Lordine #12346 è stato consegnato', TRUE, NOW() - INTERVAL 3 DAY),
 ('Sistema', 'Aggiornamento completato con successo', FALSE, NOW());
 
 -- Inserimento dati nella tabella Utente_Notifica
@@ -149,3 +149,15 @@ INSERT INTO Ordine_Prodotto (IdOrdine, IdProdotto, Quantita) VALUES
 (6, 1, 3), (6, 3, 2),
 (7, 4, 2), (7, 5, 1), (7, 13, 1),
 (8, 1, 15), (8, 2, 10), (8, 6, 5), (8, 7, 20);
+
+
+INSERT INTO Ordine_Ricorrente(IdOrdine, IdProdotto, stato) VALUES
+(1, 1, 'Confermato'),
+(1, 2, 'In preparazione'),
+(2, 4, 'In attesa'),
+(3, 11, 'Pronto'),
+(4, 1, 'Consegnato'),
+(5, 2, 'In attesa'),
+(6, 1, 'Confermato'),
+(7, 4, 'In preparazione'),
+(8, 1, 'Pronto');

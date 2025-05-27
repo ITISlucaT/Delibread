@@ -9,6 +9,22 @@ $user = [
 ]; 
 
 $current_page = 'ordini_ricorrenti';
+
+include './conf/db_config.php';
+
+$stmt = $conn->prepare("SELECT * 
+FROM ordine_ricorrente 
+INNER JOIN ordine ON ordine.idOrdine = ordine_ricorrente.idOrdine 
+INNER JOIN Panetteria ON Panetteria.idPanetteria = Ordine.idPanetteria 
+WHERE ordine.IdUtente = ?");
+$stmt->bind_param("i", $_SESSION['IdUtente']);
+$stmt->execute();
+$result = $stmt->get_result();
+$ordini_ricorrenti = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+
+
 ?>  
 
 <style>
@@ -135,7 +151,7 @@ $current_page = 'ordini_ricorrenti';
         </div>
         
         <!-- Statistiche con Bootstrap -->
-        <div class="row stats-cards">
+        <!-- <div class="row stats-cards">
             <div class="col-md-4 mb-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center">
@@ -153,8 +169,8 @@ $current_page = 'ordini_ricorrenti';
                         <p class="card-text text-muted">Valore Mensile</p>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4 mb-3">
+            </div> -->
+            <!-- <div class="col-md-4 mb-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center">
                         <i class="bi bi-calendar-check text-info stat-icon"></i>
@@ -163,7 +179,7 @@ $current_page = 'ordini_ricorrenti';
                     </div>
                 </div>
             </div>
-        </div>                 
+        </div>                  -->
         
         <div class="content-body">     
             <!-- Header sezione -->
@@ -178,8 +194,20 @@ $current_page = 'ordini_ricorrenti';
                 </button>
             </div>
                     
-            <!-- Ordine 1 - Settimanale -->                     
-            <div class="card order-card">
+
+
+<?php 
+    foreach ($ordini_ricorrenti as $ordine)
+    { 
+    $stmt = $conn->prepare("SELECT * FROM ordine INNER JOIN Ordine_Prodotto ON Ordine_Prodotto.idOrdine = ordine.idOrdine 
+    INNER JOIN Prodotto ON Prodotto.idProdotto = Ordine_Prodotto.idProdotto  WHERE ordine.idOrdine = ?");
+    $stmt->bind_param("i", $ordine['IdOrdine']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $prodotti = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+
+    echo('<div class="card order-card">
                 <div class="order-header weekly">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -187,7 +215,7 @@ $current_page = 'ordini_ricorrenti';
                                 <i class="bi bi-calendar-week me-2"></i>
                                 Ordine Settimanale
                             </h4>
-                            <h5 class="mb-0 opacity-75">Panetteria Mario</h5>
+                            <h5 class="mb-0 opacity-75">'.$ordine["Nome"].'</h5>
                         </div>
                         <span class="badge bg-light text-dark badge-frequency">
                             <i class="bi bi-clock me-1"></i>
@@ -203,26 +231,20 @@ $current_page = 'ordini_ricorrenti';
                                 Prodotti ordinati:
                             </h6>
                             <ul class="list-unstyled">
+
+');
+    foreach ($prodotti as $prodotto) {
+                            echo('
                                 <li class="mb-1">
                                     <i class="bi bi-dot"></i>
-                                    <strong>2 kg</strong> pane integrale
+                                    <strong>'.$prodotto["Quantita"].'</strong> '.$prodotto["Nome"].'
                                 </li>
-                                <li class="mb-1">
-                                    <i class="bi bi-dot"></i>
-                                    <strong>3x</strong> cornetti freschi
-                                </li>
-                                <li class="mb-1">
-                                    <i class="bi bi-dot"></i>
-                                    <strong>1x</strong> burro biologico
-                                </li>
-                            </ul>
-                        </div>
+                                ');
+    }
+        echo('      </ul>
+                    </div>
                         <div class="col-md-4">
                             <div class="text-end">
-                                <p class="mb-1">
-                                    <i class="bi bi-currency-euro me-1"></i>
-                                    <span class="fw-bold fs-5 text-success">€18.50</span>
-                                </p>
                                 <p class="mb-1 text-muted">
                                     <i class="bi bi-clock me-1"></i>
                                     Ore 8:00
@@ -246,8 +268,9 @@ $current_page = 'ordini_ricorrenti';
                                 <i class="bi bi-trash me-1"></i>
                                 Elimina
                             </button>
-                        </div>
-                        <div class="d-flex align-items-center">
+                        </div>');
+    if ($ordine['Attivo'] == 1) {
+                        echo('<div class="d-flex align-items-center">
                             <span class="badge bg-success">
                                 <i class="bi bi-check-circle me-1"></i>
                                 Attivo
@@ -255,98 +278,21 @@ $current_page = 'ordini_ricorrenti';
                         </div>
                     </div>
                 </div>
-            </div>
-                    
-            <!-- Ordine 2 - Mensile -->                     
-            <div class="card order-card">
-                <div class="order-header monthly">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-1">
-                                <i class="bi bi-calendar-month me-2"></i>
-                                Ordine Mensile
-                            </h4>
-                            <h5 class="mb-0 opacity-75">Pane e Vino</h5>
-                        </div>
-                        <span class="badge bg-light text-dark badge-frequency">
-                            <i class="bi bi-calendar me-1"></i>
-                            1° del mese
-                        </span>
-                    </div>
-                </div>
-                <div class="order-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h6 class="fw-bold mb-2">
-                                <i class="bi bi-basket me-2 text-primary"></i>
-                                Prodotti ordinati:
-                            </h6>
-                            <ul class="list-unstyled">
-                                <li class="mb-1">
-                                    <i class="bi bi-dot"></i>
-                                    <strong>5 kg</strong> pane di segale
-                                </li>
-                                <li class="mb-1">
-                                    <i class="bi bi-dot"></i>
-                                    <strong>10x</strong> brioche assortite
-                                </li>
-                                <li class="mb-1">
-                                    <i class="bi bi-dot"></i>
-                                    <strong>1x</strong> miele biologico (500g)
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="text-end">
-                                <p class="mb-1">
-                                    <i class="bi bi-currency-euro me-1"></i>
-                                    <span class="fw-bold fs-5 text-success">€27.00</span>
-                                </p>
-                                <p class="mb-1 text-muted">
-                                    <i class="bi bi-clock me-1"></i>
-                                    Ore 9:30
-                                </p>
-                                <p class="mb-0 text-primary fw-bold">
-                                    <i class="bi bi-calendar-event me-1"></i>
-                                    Prossima: Gio 1 Giu
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="order-footer">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-pencil-square me-1"></i>
-                                Modifica
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash me-1"></i>
-                                Elimina
-                            </button>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <span class="badge bg-success">
-                                <i class="bi bi-check-circle me-1"></i>
-                                Attivo
+            </div>');
+    } else {
+                        echo('<div class="d-flex align-items-center">
+                            <span class="badge bg-secondary">
+                                <i class="bi bi-x-circle me-1"></i>
+                                Inattivo
                             </span>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Card per aggiungere nuovo ordine -->
-            <div class="card border-2 border-dashed" style="border-color: #dee2e6;">
-                <div class="card-body text-center py-5">
-                    <i class="bi bi-plus-circle display-1 text-muted mb-3"></i>
-                    <h5 class="text-muted mb-3">Vuoi aggiungere un nuovo ordine ricorrente?</h5>
-                    <button class="btn btn-outline-primary btn-lg">
-                        <i class="bi bi-plus me-2"></i>
-                        Crea nuovo ordine
-                    </button>
-                </div>
-            </div>
+            </div>');
+    } 
+}     
+            ?>
+            
         </div>     
     </main> 
 </div>  
