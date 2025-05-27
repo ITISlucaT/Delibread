@@ -80,11 +80,7 @@
                     <i class="bi bi-basket fs-5"></i>                     
                     Prodotti                 
                 </a>                  
-                
-                <a href="impostazioni.php" class="menu-link <?php echo (isset($current_page) && $current_page == 'impostazioni') ? 'active' : ''; ?>">                     
-                    <i class="bi bi-gear fs-5"></i>                     
-                    Impostazioni                 
-                </a>             
+                            
             </nav>         
         </div>     
     </div>      
