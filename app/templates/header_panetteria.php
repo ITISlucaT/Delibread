@@ -245,21 +245,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Conferma logout con messaggio personalizzato
-    const logoutBtn = document.querySelector('a[href="functions/logout.php"]');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-            const userName = '<?php echo addslashes($nomeUtente . " " . $cognomeUtente); ?>';
-            const message = userName ? 
-                `Ciao ${userName}, sei sicuro di voler effettuare il logout?` : 
-                'Sei sicuro di voler effettuare il logout?';
-                
-            if (!confirm(message)) {
-                e.preventDefault();
-            }
-        });
-    }
-    
     // Debug info (rimuovi in produzione)
     console.log('Header caricato per utente:', {
         nome: '<?php echo addslashes($nomeUtente); ?>',
