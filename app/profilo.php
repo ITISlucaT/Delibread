@@ -1,5 +1,11 @@
 <?php 
-session_start(); 
+session_start();
+
+if (!isset($_SESSION['IdUtente'])) {
+    header("Location: index.php");
+    exit();
+}
+
 include 'conf/db_config.php'; 
 include 'templates/header.php';  
 
