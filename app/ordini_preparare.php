@@ -488,18 +488,15 @@ function getStatusIcon($stato) {
                                         <?= ucfirst($order['Stato']) ?>
                                     </span>
                                 </td>
-                                <td>
-                                    <?php if ($order['Note']): ?>
-                                        <div class="text-truncate" style="max-width: 150px;" title="<?= htmlspecialchars($order['Note']) ?>">
-                                            <i class="bi bi-sticky me-1 text-muted"></i>
-                                            <?= htmlspecialchars($order['Note']) ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <span class="text-muted">
-                                            <i class="bi bi-dash me-1"></i>
-                                            Nessuna nota
-                                        </span>
-                                    <?php endif; ?>
+                                <td class="align-middle">
+                                    <button type="button" 
+                                            class="btn btn-success btn-lg px-2 py-1 shadow-sm"
+                                            title="Conferma ordine"
+                                            aria-label="Conferma ordine"
+                                            onclick="confirmOrder(<?= $order['IdOrdine'] ?>)">
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                        Conferma Ordine
+                                    </button>
                                 </td>
                             </tr>
                             <?php endforeach; ?>
