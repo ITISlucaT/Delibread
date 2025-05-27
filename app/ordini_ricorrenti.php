@@ -29,8 +29,6 @@ $result = $stmt->get_result();
 $ordini_ricorrenti = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 
-
-
 ?>  
 
 <style>
@@ -176,7 +174,7 @@ $stmt->close();
                     </div>
                 </div>
             </div> -->
-            <!-- <div class="col-md-4 mb-3">
+        <!-- <div class="col-md-4 mb-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center">
                         <i class="bi bi-calendar-check text-info stat-icon"></i>
@@ -199,104 +197,151 @@ $stmt->close();
                     Nuovo ordine ricorrente
                 </button>
             </div>
-                    
 
+            <?php 
+            foreach ($ordini_ricorrenti as $ordine) { 
+                $stmt = $conn->prepare("SELECT * FROM ordine INNER JOIN Ordine_Prodotto ON Ordine_Prodotto.idOrdine = ordine.idOrdine INNER JOIN ordine_ricorrente ON ordine_ricorrente.idOrdine = ordine.idOrdine
+                INNER JOIN Prodotto ON Prodotto.idProdotto = Ordine_Prodotto.idProdotto  WHERE ordine.idOrdine = ? ORDER BY ordine_ricorrente.frequenza DESC");
+                $stmt->bind_param("i", $ordine['IdOrdine']);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $prodotti = $result->fetch_all(MYSQLI_ASSOC);
+                $stmt->close();
 
-<?php 
-    foreach ($ordini_ricorrenti as $ordine)
-    { 
-    $stmt = $conn->prepare("SELECT * FROM ordine INNER JOIN Ordine_Prodotto ON Ordine_Prodotto.idOrdine = ordine.idOrdine 
-    INNER JOIN Prodotto ON Prodotto.idProdotto = Ordine_Prodotto.idProdotto  WHERE ordine.idOrdine = ?");
-    $stmt->bind_param("i", $ordine['IdOrdine']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $prodotti = $result->fetch_all(MYSQLI_ASSOC);
-    $stmt->close();
+                // Determina la classe CSS in base alla frequenza
+                $header_class = "";
+                if ($ordine["Frequenza"] == "Settimanale") {
+                    $header_class = "weekly";
+                } else if ($ordine["Frequenza"] == "Mensile") {
+                    $header_class = "monthly";
+                } else {
+                    $header_class = "";
+                }
 
-    echo('<div class="card order-card">
-                <div class="order-header weekly">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="mb-1">
-                                <i class="bi bi-calendar-week me-2"></i>
-                                Ordine Settimanale
-                            </h4>
-                            <h5 class="mb-0 opacity-75">'.$ordine["Nome"].'</h5>
-                        </div>
-                        <span class="badge bg-light text-dark badge-frequency">
-                            <i class="bi bi-clock me-1"></i>
-                            Ogni Lunedì
-                        </span>
-                    </div>
-                </div>
-                <div class="order-body">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <h6 class="fw-bold mb-2">
-                                <i class="bi bi-basket me-2 text-primary"></i>
-                                Prodotti ordinati:
-                            </h6>
-                            <ul class="list-unstyled">
+                echo('<div class="card order-card">
+                        <div class="order-header ' . $header_class . '">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>');
+                
+                if ($ordine["Frequenza"] == "Settimanale") {
+                    echo('
+                                    <h4 class="mb-1">
+                                        <i class="bi bi-calendar-week me-2"></i>
+                                        Ordine Settimanale
+                                    </h4>');
+                } else if ($ordine["Frequenza"] == "Mensile") {
+                    echo('
+                                    <h4 class="mb-1">
+                                        <i class="bi bi-calendar-month me-2"></i>
+                                        Ordine Mensile
+                                    </h4>');
+                } else {
+                    echo('
+                                    <h4 class="mb-1">
+                                        <i class="bi bi-calendar me-2"></i>
+                                        Ordine Giornaliero
+                                    </h4>');
+                }
+                
+                echo('
+                                    <h5 class="mb-0 opacity-75">'.$ordine["Nome"].'</h5>
+                                </div>');
+                
+                if ($ordine["Frequenza"] == "Settimanale") {
+                    echo('
+                                <span class="badge bg-primary badge-frequency">
+                                    <i class="bi bi-calendar-week me-1"></i>
+                                    Ogni '. $ordine["GiorniSettimana"] .'
+                                </span>
+                            </div>
+                        </div>');
+                } else if ($ordine["Frequenza"] == "Mensile") {
+                    // Estrai solo il giorno dalla data
+                    $giorno = date('d', strtotime($ordine["DataConsegna"]));
+                    echo('
+                                <span class="badge bg-warning text-dark badge-frequency">
+                                    <i class="bi bi-calendar-month me-1"></i>
+                                    Ogni ' . $giorno . ' del mese
+                                </span>
+                            </div>
+                        </div>');
+                } else {
+                    echo(' 
+                                <span class="badge bg-info text-dark badge-frequency">
+                                    <i class="bi bi-calendar me-1"></i>
+                                    Ogni Giorno
+                                </span>
+                            </div>
+                        </div>');
+                }       
 
-');
-    foreach ($prodotti as $prodotto) {
-                            echo('
-                                <li class="mb-1">
-                                    <i class="bi bi-dot"></i>
-                                    <strong>'.$prodotto["Quantita"].'</strong> '.$prodotto["Nome"].'
-                                </li>
-                                ');
-    }
-        echo('      </ul>
-                    </div>
-                        <div class="col-md-4">
-                            <div class="text-end">
-                                <p class="mb-1 text-muted">
-                                    <i class="bi bi-clock me-1"></i>
-                                    Ore 8:00
-                                </p>
-                                <p class="mb-0 text-primary fw-bold">
-                                    <i class="bi bi-calendar-event me-1"></i>
-                                    Prossima: Lun 29 Mag
-                                </p>
+                echo('
+                        <div class="order-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6 class="fw-bold mb-2">
+                                        <i class="bi bi-basket me-2 text-primary"></i>
+                                        Prodotti ordinati:
+                                    </h6>
+                                    <ul class="list-unstyled">');
+
+                foreach ($prodotti as $prodotto) {
+                    echo('
+                                        <li class="mb-1">
+                                            <i class="bi bi-dot"></i>
+                                            <strong>'.$prodotto["Quantita"].'</strong> '.$prodotto["Nome"].'
+                                        </li>');
+                }
+                
+                echo('                  </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-end">
+                                        <p class="mb-1 text-muted">
+                                        </p>
+                                        <p class="mb-0 text-primary fw-bold">
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>');
+                
+                echo('
+                        <div class="order-footer">
+                            <div class="d-flex justify-content-between">
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-pencil-square me-1"></i>
+                                        Modifica
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash me-1"></i>
+                                        Elimina
+                                    </button>
+                                </div>');
+                
+                if ($ordine['Attivo'] == 1) {
+                    echo('                  <div class="d-flex align-items-center">
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Attivo
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="order-footer">
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-pencil-square me-1"></i>
-                                Modifica
-                            </button>
-                            <button class="btn btn-outline-danger btn-sm">
-                                <i class="bi bi-trash me-1"></i>
-                                Elimina
-                            </button>
-                        </div>');
-    if ($ordine['Attivo'] == 1) {
-                        echo('<div class="d-flex align-items-center">
-                            <span class="badge bg-success">
-                                <i class="bi bi-check-circle me-1"></i>
-                                Attivo
-                            </span>
+                    </div>');
+                } else {
+                    echo('                  <div class="d-flex align-items-center">
+                                    <span class="badge bg-secondary">
+                                        <i class="bi bi-x-circle me-1"></i>
+                                        Inattivo
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>');
-    } else {
-                        echo('<div class="d-flex align-items-center">
-                            <span class="badge bg-secondary">
-                                <i class="bi bi-x-circle me-1"></i>
-                                Inattivo
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>');
-    } 
-}     
+                    </div>');
+                } 
+            }     
             ?>
             
         </div>     
