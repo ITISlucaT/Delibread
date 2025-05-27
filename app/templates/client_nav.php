@@ -56,7 +56,7 @@
         
         <div class="p-3">             
             <nav class="nav flex-column gap-2">                 
-                <a href="#profilo" class="menu-link <?php echo (isset($current_page) && $current_page == 'profilo') ? 'active' : ''; ?>">                     
+                <a href="profilo.php" class="menu-link <?php echo (isset($current_page) && $current_page == 'profilo') ? 'active' : ''; ?>">                     
                     <i class="bi bi-person fs-5"></i>                     
                     Profilo                 
                 </a>                                  
@@ -81,7 +81,7 @@
                     Prodotti                 
                 </a>                  
                 
-                <a href="#impostazioni" class="menu-link <?php echo (isset($current_page) && $current_page == 'impostazioni') ? 'active' : ''; ?>">                     
+                <a href="impostazioni.php" class="menu-link <?php echo (isset($current_page) && $current_page == 'impostazioni') ? 'active' : ''; ?>">                     
                     <i class="bi bi-gear fs-5"></i>                     
                     Impostazioni                 
                 </a>             
