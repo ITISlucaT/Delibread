@@ -49,7 +49,7 @@
     <div class="sidebar position-fixed vh-100">         
         <div class="logo-container">             
             <div class="d-flex align-items-center gap-3">                 
-                <img src="logo.png" alt="Logo" class="rounded-circle" style="width: 50px; height: 50px;">                 
+                <img src="assets/logo.png" alt="Logo" class="rounded-circle" style="width: 50px; height: 50px;">                 
                 <h5 class="mb-0">Delibread</h5>             
             </div>         
         </div>          
