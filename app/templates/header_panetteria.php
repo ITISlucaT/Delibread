@@ -61,7 +61,7 @@ if (isset($_SESSION['IdUtente'])) {
 }
 ?>
 
-<header class="navbar navbar-light bg-white shadow-sm">
+<header class="navbar navbar-light bg-white shadow-sm sticky-top">
     <div class="container-fluid">
         <!-- Sezione sinistra: Informazioni utente e panetteria -->
         <div class="d-flex align-items-center">
@@ -122,7 +122,7 @@ if (isset($_SESSION['IdUtente'])) {
 
 .user-avatar:hover {
     transform: scale(1.05);
-    box-shadow: 0 2px 8px #CF894D;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.3);
 }
 
 .vr {
@@ -136,29 +136,33 @@ if (isset($_SESSION['IdUtente'])) {
     opacity: 0.7;
 }
 
-/* Assicura che l'header stia accanto alla sidebar */
+/* Assicura che l'header stia accanto alla sidebar e rimanga sticky */
 header.navbar {
     margin-left: 0;
-    position: relative;
-    z-index: 1;
+    position: sticky !important;
+    top: 0;
+    z-index: 1020;
     border-bottom: 1px solid rgba(0,0,0,.125);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 /* Layout con sidebar per desktop */
 @media (min-width: 992px) {
     header.navbar {
         margin-left: 280px; /* Modifica questo valore con la larghezza della tua sidebar */
+        width: calc(100% - 280px); /* Assicura che l'header abbia la larghezza corretta */
     }
 }
 
 /* Hover effects */
 .user-info .user-name:hover {
-    color: #AE7341 !important;
+    color: #0056b3 !important;
     transition: color 0.2s ease;
 }
 
 .bakery-info .bakery-name:hover {
-    color: #CF894D !important;
+    color: #0056b3 !important;
     transition: color 0.2s ease;
 }
 
@@ -222,6 +226,9 @@ header.navbar {
 }
 </style>
 
+<!-- Font Awesome (se non già incluso nel tuo layout) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <script>
 // Script per migliorare l'esperienza utente
 document.addEventListener('DOMContentLoaded', function() {
@@ -238,7 +245,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    
+    // Conferma logout con messaggio personalizzato
+    const logoutBtn = document.querySelector('a[href="functions/logout.php"]');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+            const userName = '<?php echo addslashes($nomeUtente . " " . $cognomeUtente); ?>';
+            const message = userName ? 
+                `Ciao ${userName}, sei sicuro di voler effettuare il logout?` : 
+                'Sei sicuro di voler effettuare il logout?';
+                
+            if (!confirm(message)) {
+                e.preventDefault();
+            }
+        });
+    }
     
     // Debug info (rimuovi in produzione)
     console.log('Header caricato per utente:', {
