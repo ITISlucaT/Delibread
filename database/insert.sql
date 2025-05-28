@@ -151,13 +151,14 @@ INSERT INTO Ordine_Prodotto (IdOrdine, IdProdotto, Quantita) VALUES
 (8, 1, 15), (8, 2, 10), (8, 6, 5), (8, 7, 20);
 
 
-INSERT INTO Ordine_Ricorrente(IdOrdine, IdProdotto, stato) VALUES
-(1, 1, 'Confermato'),
-(1, 2, 'In preparazione'),
-(2, 4, 'In attesa'),
-(3, 11, 'Pronto'),
-(4, 1, 'Consegnato'),
-(5, 2, 'In attesa'),
-(6, 1, 'Confermato'),
-(7, 4, 'In preparazione'),
-(8, 1, 'Pronto');
+INSERT INTO Ordine_Ricorrente (IdOrdine, Frequenza, GiorniSettimana, Attivo) VALUES
+(1, 'Settimanale', 'Lun, Mar', 1),
+(2, 'Settimanale', 'Mer, Ven', 1),
+(3, 'Mensile', '1 del mese', 1),
+(4, 'Mensile', '15 del mese', 0),
+(5, 'Settimanale', 'Gio, Sab', 1),
+(6, 'Mensile', 'Ultimo giorno del mese', 1),
+(7, 'Giornaliera', 'Tutti i giorni', 1),
+(8, 'Settimanale', 'Dom', 0),
+(9, 'Giornaliera', 'Tutti i giorni', 0),
+(10, 'Mensile', '10 del mese', 1);
